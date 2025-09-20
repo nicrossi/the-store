@@ -4,6 +4,10 @@ set -e
 # Global configuration
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SERVICES="catalog cart checkout orders ui"
+# Default to latest supported Kind node image; override with KIND_NODE_IMAGE if needed
+KIND_NODE_IMAGE="${KIND_NODE_IMAGE:-kindest/node:v1.34.0}"
+# Minimal Kind CLI version required for newer Kubernetes node images (kubeadm v1beta4+)
+MIN_KIND_VERSION="v0.26.0"
 
 print_status() {
     local BLUE='\033[0;34m'
@@ -25,6 +29,11 @@ print_error() {
     echo -e "${RED}$1\033[0m"
 }
 
+# Semver compare: returns 0 if $1 >= $2
+version_ge() {
+    [ "$(printf '%s\n' "$2" "$1" | sort -V | head -n1)" = "$2" ]
+}
+
 check_prerequisites() {
     print_status "Checking prerequisites..."
 
@@ -39,6 +48,19 @@ check_prerequisites() {
         exit 1
     fi
     print_success "Kind is installed"
+
+    # Enforce Kind >= MIN_KIND_VERSION when using Kubernetes >= 1.32 node images
+    NODE_TAG=$(echo "$KIND_NODE_IMAGE" | sed -n 's/.*node:v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+    if [[ -n "$NODE_TAG" ]]; then
+        NODE_MINOR=$(echo "$NODE_TAG" | awk -F. '{print $2}')
+        if [[ "$NODE_MINOR" -ge 32 ]]; then
+            CURRENT_KIND_VERSION=$(kind version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
+            if ! version_ge "$CURRENT_KIND_VERSION" "$MIN_KIND_VERSION"; then
+                print_error "Kind $MIN_KIND_VERSION+ required for node image $KIND_NODE_IMAGE (detected $CURRENT_KIND_VERSION). Upgrade Kind or set KIND_NODE_IMAGE=kindest/node:v1.31.0."
+                exit 1
+            fi
+        fi
+    fi
 
     if ! command -v kubectl &> /dev/null; then
         print_error "Kubectl is not installed. Please install kubectl first."
@@ -77,9 +99,13 @@ create_cluster() {
     if ! kind get clusters | grep -q "^$CLUSTER_NAME$"; then
         print_status "Creating new Kind cluster '$CLUSTER_NAME'..."
 
-        cat <<EOF | kind create cluster --name $CLUSTER_NAME --config -
+        cat <<EOF | kind create cluster --name $CLUSTER_NAME --image ${KIND_NODE_IMAGE} --config -
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    SystemdCgroup = false
 nodes:
 - role: control-plane
   kubeadmConfigPatches:
@@ -88,6 +114,9 @@ nodes:
     nodeRegistration:
       kubeletExtraArgs:
         node-labels: "ingress-ready=true"
+  - |
+    kind: KubeletConfiguration
+    cgroupDriver: systemd
   extraPortMappings:
   - containerPort: 80
     hostPort: 80
@@ -108,9 +137,11 @@ EOF
 }
 
 install_ingress() {
+    # Allow overriding ingress-nginx controller version; keep existing default
+    INGRESS_NGINX_VERSION="${INGRESS_NGINX_VERSION:-controller-v1.13.1}"
     if ! kubectl get namespace ingress-nginx &> /dev/null; then
         print_status "Installing nginx ingress controller..."
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.1/deploy/static/provider/kind/deploy.yaml
+        kubectl apply -f "https://raw.githubusercontent.com/kubernetes/ingress-nginx/${INGRESS_NGINX_VERSION}/deploy/static/provider/kind/deploy.yaml"
         print_status "Waiting for nginx ingress controller to be ready..."
         kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
