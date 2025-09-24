@@ -85,6 +85,9 @@ Run load generator tests to validate system performance:
 
 The load generator will run performance tests against your local cluster for 10 minutes (or until manually stopped) to validate system behavior under load.
 
+## Service Mesh & API Gateway
+Check [Service Mesh](docs/service-mesh/README.md) docs for deploying the Kuma service mesh together with the Kong API delegated Gateway
+
 ---
 
 **The Store** - Built with ❤️ for modern e-commerce
