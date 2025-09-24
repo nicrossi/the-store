@@ -35,6 +35,7 @@ Run the mesh installer script to provision the Kuma control plane, enable sideca
 What the script does for you:
 
 - Adds the `kumahq` and `konghq` Helm repositories and installs Kuma in standalone mode.
+- Creates a Kuma Mesh named `the-store` and labels the `the-store` and `gateway` namespaces with `kuma.io/mesh=the-store` so all dataplanes join that mesh. Override with `MESH_NAME=<name>` if desired.
 - Enables automatic sidecar injection for the `the-store` (application) and `gateway` namespaces.
 - Installs Kong Gateway (`kong-gw` Helm release) preconfigured to route all incoming requests to the UI service.
 - Applies baseline Kuma resources (`Mesh`, `TrafficPermission`, `MeshTrafficPermission`) that allow the UI, Kong, and backend services to communicate securely.
@@ -91,7 +92,21 @@ If you only need the commands (for example to copy into another session), run:
   ./monitor-gateway-logs.sh --namespace gateway --print-only
 ```
 
-## 6. Troubleshooting tips
+## 6. Explore the GUI
+
+You can view the sidecar proxies that are connected to the Kuma control plane.
+Kuma ships with a read-only GUI that you can use to retrieve Kuma resources. 
+By default, the GUI listens on the API port which defaults to 5681.
+
+To access Kuma we need to first port-forward the API service with:
+```bash
+    kubectl port-forward svc/kuma-control-plane -n kuma-system 5681:5681
+```
+And then navigate to 127.0.0.1:5681/gui to see the GUI.
+
+To learn more, read the [documentation about the user interface.](https://kuma.io/docs/2.12.x/production/gui/)
+
+## 7. Troubleshooting tips
 
 - **Kuma readiness** – The installer waits for the Kuma CRDs, control plane pods, and webhooks. If it keeps timing out, inspect the control plane namespace:
 ```bash
