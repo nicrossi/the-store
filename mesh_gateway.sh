@@ -3,6 +3,8 @@ set -euo pipefail
 
 NAMESPACE="${NAMESPACE:-the-store}"
 GATEWAY_NS="${GATEWAY_NS:-gateway}"
+# Mesh name to use for Kuma resources.
+MESH_NAME="${MESH_NAME:-the-store}"
 cmd="${1:-install}"
 
 wait_for_kuma_ready() {
@@ -13,6 +15,18 @@ wait_for_kuma_ready() {
   done
   kubectl -n kuma-system wait --for=condition=Available deploy --all --timeout=300s || true
   kubectl -n kuma-system wait --for=condition=Ready pod -l app=kuma-control-plane --timeout=300s || true
+}
+
+# Ensure the target Mesh exists (defaults to ${MESH_NAME})
+apply_mesh() {
+  echo "✔︎ Ensuring Mesh '${MESH_NAME}' exists..."
+  cat <<YAML | kubectl apply -f -
+apiVersion: kuma.io/v1alpha1
+kind: Mesh
+metadata:
+  name: ${MESH_NAME}
+spec: {}
+YAML
 }
 
 apply_mesh_gateway_permissions() {
@@ -59,10 +73,16 @@ install_stack() {
   wait_for_kuma_ready
   install_gateway_api_crds
 
+  # Create target namespaces (app and gateway)
   kubectl create ns "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
-  kubectl label ns "${NAMESPACE}" kuma.io/sidecar-injection=enabled --overwrite
   kubectl create ns "${GATEWAY_NS}" --dry-run=client -o yaml | kubectl apply -f -
+
+  # Create the Mesh and label namespaces to join it
+  apply_mesh
+  kubectl label ns "${NAMESPACE}" kuma.io/sidecar-injection=enabled --overwrite
+  kubectl label ns "${NAMESPACE}" kuma.io/mesh="${MESH_NAME}" --overwrite
   kubectl label ns "${GATEWAY_NS}" kuma.io/sidecar-injection=enabled --overwrite
+  kubectl label ns "${GATEWAY_NS}" kuma.io/mesh="${MESH_NAME}" --overwrite
 
   cat <<YAML | kubectl -n "${GATEWAY_NS}" apply -f -
 apiVersion: v1
