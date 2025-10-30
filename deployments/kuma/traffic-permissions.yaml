@@ -3,33 +3,42 @@ kind: MeshTrafficPermission
 metadata:
   name: allow-ui-to-catalog
 spec:
-  sources:
-    - match:
-        kuma.io/service: ui_the-store_svc_80
-  destinations:
-    - match:
-        kuma.io/service: catalog_the-store_svc_80
+  targetRef:
+    kind: MeshService
+    name: catalog_the-store_svc_80
+  from:
+    - targetRef:
+        kind: MeshService
+        name: ui_the-store_svc_80
+      default:
+        action: Allow
 ---
 apiVersion: kuma.io/v1alpha1
 kind: MeshTrafficPermission
 metadata:
   name: allow-ui-to-cart
 spec:
-  sources:
-    - match:
-        kuma.io/service: ui_the-store_svc_80
-  destinations:
-    - match:
-        kuma.io/service: cart_the-store_svc_80
+  targetRef:
+    kind: MeshService
+    name: cart_the-store_svc_80
+  from:
+    - targetRef:
+        kind: MeshService
+        name: ui_the-store_svc_80
+      default:
+        action: Allow
 ---
 apiVersion: kuma.io/v1alpha1
 kind: MeshTrafficPermission
 metadata:
   name: allow-cart-to-checkout
 spec:
-  sources:
-    - match:
-        kuma.io/service: cart_the-store_svc_80
-  destinations:
-    - match:
-        kuma.io/service: checkout_the-store_svc_80
+  targetRef:
+    kind: MeshService
+    name: checkout_the-store_svc_80
+  from:
+    - targetRef:
+        kind: MeshService
+        name: cart_the-store_svc_80
+      default:
+        action: Allow
