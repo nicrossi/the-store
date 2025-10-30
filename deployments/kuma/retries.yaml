@@ -1,0 +1,15 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshRetry
+metadata:
+  name: global-retries
+spec:
+  targetRef:
+    kind: Mesh
+  to:
+    - targetRef:
+        kind: MeshService
+        name: "*"
+      default:
+        http:
+          numRetries: 3
+          perTryTimeout: 1s
