@@ -33,58 +33,22 @@ The Store is built with a microservices architecture that uses different technol
 
 ### Cluster Management
 
-Use the `local.sh` script to manage your local Kubernetes cluster:
+Use the `setup.sh` script to manage your local Kubernetes cluster:
 
 ```bash
 # Create a new cluster and deploy all services
-./local.sh create-cluster
+./setup.sh
 
-# Rebuild the entire cluster (delete and recreate)
-./local.sh rebuild-cluster
-
-# Delete the cluster
-./local.sh delete-cluster
-
-# Check cluster status
-./local.sh status
-
-# Build and load Docker images only
-./local.sh reload-images
+# To skip docker build images
+./setup.sh --skip-build
 ```
 
-After running `./local.sh create-cluster`, access The Store at: **http://localhost**.
+After running `./setup.sh`, access The Store at: **http://localhost**.
 
-### Testing
-
-#### E2E Testing
-
-Run end-to-end tests to validate the complete system:
-
+To access Kuma GUI:
 ```bash
-# Run e2e tests on existing cluster
-./local.sh e2e-test
+kubectl port-forward svc/kuma-control-plane -n kuma-system 5681:5681
 ```
 
-**Note**: These tests are run automatically when creating or rebuilding the cluster. You can skip them using the `--skip-tests` parameter for faster setup:
+Access at **http://127.0.0.1:5681/**
 
-```bash
-# Create cluster without running tests (faster setup)
-./local.sh create-cluster --skip-tests
-
-# Rebuild cluster without running tests
-./local.sh rebuild-cluster --skip-tests
-```
-
-#### Load Testing
-Run load generator tests to validate system performance:
-
-```bash
-# Run load generator tests
-./local.sh load-test
-```
-
-The load generator will run performance tests against your local cluster for 10 minutes (or until manually stopped) to validate system behavior under load.
-
----
-
-**The Store** - Built with ❤️ for modern e-commerce

@@ -1,0 +1,99 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: ui-to-catalog
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: catalog
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: ui
+          k8s.kuma.io/namespace: the-store
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: ui-to-carts
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: carts
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: ui
+          k8s.kuma.io/namespace: the-store
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: ui-to-checkout
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: checkout
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: ui
+          k8s.kuma.io/namespace: the-store
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: ui-to-orders
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: orders
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: ui
+          k8s.kuma.io/namespace: the-store
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: checkout-to-orders
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: orders
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: checkout
+          k8s.kuma.io/namespace: the-store
+      default:
+        action: Allow
