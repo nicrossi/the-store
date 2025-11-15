@@ -60,6 +60,7 @@ create_cluster_and_deploy() {
     deploy_services
     deploy_mesh
     deploy_ingress
+    setup_metrics
 }
 
 create_cluster() {
@@ -200,6 +201,19 @@ deploy_ingress() {
 
     print_status "Adding external traffic permissions"
     kubectl apply -f dist/kong/externalTrafficPermission.yaml
+
+    print_success "Kong gateway successfully installed"
+}
+
+setup_metrics(){
+    print_status "Setting up observability configuration"
+
+    kumactl install observability | kubectl apply -f -
+
+    kubectl apply -f dist/kuma/meshMetric.yaml
+    kubectl apply -f dist/kuma/meshLog.yaml
+
+    print_success "Observability successfully configured"
 }
 
 

@@ -43,12 +43,39 @@ Use the `setup.sh` script to manage your local Kubernetes cluster:
 ./setup.sh --skip-build
 ```
 
-After running `./setup.sh`, access The Store at: **http://localhost**.
+After running `./setup.sh`, port forward to access the gateway: 
+
+```bash
+ kubectl port-forward -n kong svc/kong-gateway-proxy 8080:80
+```
+Then access The Store at: **http://localhost:8080**.
+
+
 
 To access Kuma GUI:
 ```bash
 kubectl port-forward svc/kuma-control-plane -n kuma-system 5681:5681
 ```
+Access at **http://localhost:5681/**
 
-Access at **http://127.0.0.1:5681/**
 
+To access control plane metrics:
+```bash
+kubectl port-forward svc/kuma-control-plane 5680:5680 -n kuma-system
+```
+Access at **http://localhost:5680/**
+
+
+
+
+Prometheus
+```bash
+kubectl port-forward -n mesh-observability svc/prometheus 9090:9090
+```
+Access at **http://localhost:9090/**
+
+Grafana
+```bash
+kubectl port-forward -n mesh-observability pod/grafana-7456c5d6cb-9brkf 3000:3000
+```
+Access at **http://localhost:3000/**
