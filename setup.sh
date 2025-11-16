@@ -157,7 +157,7 @@ deploy_mesh(){
 
       helm repo add kuma https://kumahq.github.io/charts
       helm repo update
-      helm install --create-namespace --namespace kuma-system kuma kuma/kuma
+      helm install --create-namespace --namespace kuma-system kuma kuma/kuma --version 2.12.4
 
       print_status "Waiting for Kuma Control Plane to be ready"
       kubectl wait --namespace kuma-system \
