@@ -228,7 +228,7 @@ delete_cluster() {
 
 run_e2e_tests() {
     print_status "Running end-to-end tests..."
-    bash "$DIR/src/e2e/scripts/run-docker.sh" -n host 'http://localhost'
+    bash "$DIR/src/e2e/scripts/run-docker.sh" -n host 'http://localhost:8080'
     print_success "E2E tests completed!"
 }
 
