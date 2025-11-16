@@ -204,6 +204,10 @@ deploy_ingress() {
     print_status "Adding external traffic permissions"
     kubectl apply -f dist/kong/externalTrafficPermission.yaml
 
+
+    kubectl apply -f dist/kong/rateLimitPlugin.yaml
+    kubectl apply -f dist/kong/rateLimitConfig.yaml
+
     print_success "Kong gateway successfully installed"
 }
 
