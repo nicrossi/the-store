@@ -185,6 +185,8 @@ deploy_mesh(){
 
 deploy_ingress() {
     print_status "Installing Kong gateway..."
+    helm repo add kong https://charts.konghq.com
+    helm repo update
     helm install kong kong/ingress -n kong --create-namespace
 
     kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
@@ -201,6 +203,10 @@ deploy_ingress() {
 
     print_status "Adding external traffic permissions"
     kubectl apply -f dist/kong/externalTrafficPermission.yaml
+
+
+    kubectl apply -f dist/kong/rateLimitPlugin.yaml
+    kubectl apply -f dist/kong/rateLimitConfig.yaml
 
     print_success "Kong gateway successfully installed"
 }
