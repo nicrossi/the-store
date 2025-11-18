@@ -4,6 +4,6 @@ metadata:
   name: rate-limit-ui
   namespace: the-store
 config:
-  minute: 10
+  minute: 100
   policy: local
 plugin: rate-limiting
