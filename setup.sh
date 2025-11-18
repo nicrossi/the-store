@@ -206,7 +206,6 @@ deploy_ingress() {
 
 
     kubectl apply -f dist/kong/rateLimitPlugin.yaml
-    kubectl apply -f dist/kong/rateLimitConfig.yaml
 
     print_success "Kong gateway successfully installed"
 }

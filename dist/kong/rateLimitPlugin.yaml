@@ -1,7 +1,8 @@
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
 metadata:
-  name: rate-limit
+  name: rate-limit-ui
+  namespace: the-store
 config:
   minute: 10
   policy: local
