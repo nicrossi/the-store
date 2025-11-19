@@ -1,14 +1,14 @@
 apiVersion: kuma.io/v1alpha1
 kind: MeshTimeout
 metadata:
-  name: global-timeouts
+  name: tcp-timeout
   namespace: kuma-system
+  labels:
+    kuma.io/mesh: default
 spec:
-  targetRef:
-    kind: Mesh
   to:
     - targetRef:
         kind: Mesh
       default:
-        connectionTimeout: 5s
-        idleTimeout: 300s
+        idleTimeout: 20s
+        connectionTimeout: 2s

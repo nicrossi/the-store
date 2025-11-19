@@ -200,6 +200,7 @@ deploy_ingress() {
 
     print_status "Adding HttpRoute to ingress"
     kubectl apply -f dist/kong/route.yaml
+    kubectl apply -f dist/kong/authRoute.yaml
 
     print_status "Adding external traffic permissions"
     kubectl apply -f dist/kong/externalTrafficPermission.yaml
