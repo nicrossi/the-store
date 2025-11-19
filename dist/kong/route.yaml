@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ui
+  namespace: the-store
+  annotations:
+    konghq.com/plugins: rate-limit-ui
+spec:
+  parentRefs:
+    - name: kong
+      namespace: kong
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: ui
+          namespace: the-store
+          kind: Service
+          port: 80
+---

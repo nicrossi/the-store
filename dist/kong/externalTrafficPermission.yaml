@@ -1,0 +1,20 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: gateway-to-ui
+  namespace: the-store
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: ui
+      k8s.kuma.io/namespace: the-store
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          app.kubernetes.io/name: gateway
+          k8s.kuma.io/namespace: kong
+      default:
+        action: Allow
+---

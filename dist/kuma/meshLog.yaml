@@ -1,0 +1,31 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshAccessLog
+metadata:
+  name: all-incoming-traffic
+  namespace: the-store
+  labels:
+    kuma.io/mesh: default
+spec:
+  rules:
+    - default:
+        backends:
+          - type: File
+            file:
+              path: "/dev/stdout"
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshAccessLog
+metadata:
+  name: all-outgoing-traffic
+  namespace: the-store
+  labels:
+    kuma.io/mesh: default
+spec:
+  to:
+    - targetRef:
+        kind: Mesh
+      default:
+        backends:
+          - type: File
+            file:
+              path: "/dev/stdout"

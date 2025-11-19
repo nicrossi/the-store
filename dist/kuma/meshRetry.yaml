@@ -1,0 +1,27 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshRetry
+metadata:
+  name: retry-policy-test
+  namespace: kuma-system
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: ui
+      k8s.kuma.io/namespace: the-store
+  to:
+  - targetRef:
+      kind: Mesh
+    default:
+      tcp:
+        maxConnectAttempt: 10
+      http:
+        numRetries: 10
+        perTryTimeout: 1s
+        backOff:
+          baseInterval: 25ms
+          maxInterval: 250ms
+        retryOn:
+          - 5xx
+          - ConnectFailure
+          - GatewayError

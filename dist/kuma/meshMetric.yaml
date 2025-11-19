@@ -1,0 +1,19 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshMetric
+metadata:
+  name: metrics
+  namespace: the-store
+  labels:
+    kuma.io/mesh: default
+spec:
+  default:
+    sidecar:
+      includeUnused: true
+      profiles:
+        appendProfiles:
+          - name: Basic
+    backends:
+      - type: Prometheus
+        prometheus:
+          port: 5670
+          path: "/metrics"
