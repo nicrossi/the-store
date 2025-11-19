@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-key-auth
+  namespace: the-store
+  labels:
+    konghq.com/credential: key-auth
+stringData:
+  key: hello_world
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: test
+  namespace: the-store
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: test
+credentials:
+  - test-key-auth
