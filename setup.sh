@@ -61,6 +61,7 @@ create_cluster_and_deploy() {
     deploy_mesh
     deploy_ingress
     setup_metrics
+    start_dummy_pod
 }
 
 create_cluster() {
@@ -223,6 +224,9 @@ setup_metrics(){
     print_success "Observability successfully configured"
 }
 
+start_dummy_pod(){
+  print_status
+}
 
 main() {
     IMAGE_TAG="latest"
