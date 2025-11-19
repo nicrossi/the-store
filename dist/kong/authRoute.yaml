@@ -4,7 +4,7 @@ metadata:
   name: ui-orders
   namespace: the-store
   annotations:
-    konghq.com/plugins: basic-auth-plugin
+    konghq.com/plugins: key-auth
 spec:
   parentRefs:
     - name: kong
