@@ -5,11 +5,16 @@ metadata:
   namespace: kuma-system
 spec:
   targetRef:
-    kind: Mesh
+    kind: MeshSubset
+    tags:
+      app.kubernetes.io/name: ui
+      k8s.kuma.io/namespace: the-store
   to:
   - targetRef:
       kind: Mesh
     default:
+      tcp:
+        maxConnectAttempt: 10
       http:
         numRetries: 10
         perTryTimeout: 1s

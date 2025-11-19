@@ -6,9 +6,26 @@ metadata:
   labels:
     kuma.io/mesh: default
 spec:
+  targetRef:
+    kind: Mesh
+    proxyTypes:
+      - Sidecar
   to:
     - targetRef:
         kind: Mesh
       default:
-        idleTimeout: 20s
-        connectionTimeout: 2s
+        connectionTimeout: 5s
+        idleTimeout: 1h0m0s
+        http:
+          requestTimeout: 15s
+          streamIdleTimeout: 30m0s
+  from:
+    - targetRef:
+        kind: Mesh
+      default:
+        connectionTimeout: 10s
+        idleTimeout: 2h0m0s
+        http:
+          requestTimeout: 0s
+          streamIdleTimeout: 1h0m0s
+          maxStreamDuration: 0s

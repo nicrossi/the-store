@@ -177,6 +177,9 @@ deploy_mesh(){
     print_status "Applying Mesh Traffic Permissions..."
     kubectl apply -f dist/kuma/trafficPermission.yaml
 
+    kubectl apply -f dist/kuma/meshRetry.yaml
+    kubectl apply -f dist/kuma/meshTimeout.yaml
+
     print_status "Restarting pods to trigger Kuma sidecar injection..."
     kubectl rollout restart deployment -n $NAMESPACE
 
