@@ -228,7 +228,9 @@ setup_metrics(){
 }
 
 start_dummy_pod(){
-  print_status
+  print_status "Initializing dummy pod for tests"
+  kubectl apply -f dist/kuma/dummyPod.yaml
+  print_success "Pod initialized"
 }
 
 main() {
