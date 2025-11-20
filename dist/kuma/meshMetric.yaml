@@ -11,7 +11,7 @@ spec:
       includeUnused: true
       profiles:
         appendProfiles:
-          - name: Basic
+          - name: All
     backends:
       - type: Prometheus
         prometheus:
